@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('git'){
            steps {
-                git branch: 'main', url: 'https://github.com/bravatjammu/node.git'
+                git branch: 'main', url: 'https://github.com/rishicloud/node.git'
             }
         }
 
