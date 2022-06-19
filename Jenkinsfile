@@ -1,37 +1,33 @@
 pipeline {
     agent { label 'rishi12' }
-    options { 
-        timeout(time: 1, unit: 'HOURS')
-        retry(2) 
+    triggers { 
+        cron('45 23 * * 1-5')
+        pollSCM('*/5 * * * *')
     }
-    triggers {
-        cron('0 * * * *')
-    }
-    parameters {
-        choice(name: 'GOAL', choices: ['install', 'pack', 'run build'])
-    }
+
+
     stages {
-        stage('Source Code') {
+        stage('scm') {
             steps {
-                git url: 'https://github.com/rishicloud/node.git', 
-                branch: 'main'
-            }
 
+                git url: 'https://github.com/rishicloud/node.git', branch: 'main'
+            }
         }
-        stage('Build the Code and sonarqube-analysis') {
+        stage('build') {
             steps {
-                withSonarQubeEnv('SONAR_9.3') {
-                    sh script: "npm ${params.GOAL} sonar:sonar"
+                withSonarQubeEnv(installationName: 'SONAR_9.3') {
+                    sh "npm install sonar:sonar"                                  
                 }
-
             }
         }
-        stage('reporting') {
+		stage("Quality Gate") {
             steps {
-                junit testResults: 'target/surefire-reports/*.xml'
+                timeout(time: 1, unit: 'HOURS') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
-
     }
-
 }
