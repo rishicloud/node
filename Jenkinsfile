@@ -16,7 +16,7 @@ pipeline {
         stage('build') {
             steps {
                 withSonarQubeEnv(installationName: 'SONAR_9.3') {
-                    sh "npm install sonar:sonar"                                  
+                    sh "npm install  sonar:sonar"                                  
                 }
             }
         }
