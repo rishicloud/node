@@ -15,8 +15,10 @@ pipeline {
         }
         stage('build') {
             steps {
-                withSonarQubeEnv(installationName: 'SONAR_9.3') {
-                    sh 'npm install  sonar:sonar'                                  
+                 withSonarQubeEnv(installationName: 'SONAR_9.3', envOnly: true, credentialsId: 'SONAR_TOKEN') {
+                    sh 'npm install  sonar:sonar'  
+                    echo "${env.SONAR_HOST_URL}"
+                                
                 }
             }
         }
